@@ -96,7 +96,7 @@ public class ChordPicker {
 		if (!isMinorKey) {
 			rootChordStruct = MajorChordProgression.I.getChordStruct().clone();
 		} else {
-			rootChordStruct = MinorChordProgression.I.getChordStruct().clone();
+			rootChordStruct = MajorChordProgression.I.getChordStruct().clone();
 		}
 		
 		//Offset the chord intervals by the key
