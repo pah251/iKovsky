@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.0"
+      version = ">5.0"
     }
   }
 }
@@ -53,6 +53,6 @@ resource "aws_lambda_function" "java_ikovsky" {
 //  source_code_hash = "${data.archive_file.lambda_zip.output_base64sha256}"
   source_code_hash = filebase64sha256("${path.module}/../build/distributions/iKovsky.zip")
 
-  runtime = "java8"
+  runtime = "java17"
 }
 

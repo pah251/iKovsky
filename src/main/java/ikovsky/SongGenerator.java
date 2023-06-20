@@ -85,7 +85,12 @@ public class SongGenerator implements JMC {
         //Create all the required parts
         for (int i = 0; i < songStructure.numParts; i++) {
             boolean isRhythmPart = false;
-            int partOctave = rand.nextInt(songStructure.maxOctave - songStructure.minOctave) + songStructure.minOctave + 1; //Randomise the octave within limits
+            int partOctave;
+            if(songStructure.maxOctave == songStructure.minOctave) {
+                partOctave = songStructure.maxOctave;
+            } else {
+                partOctave = rand.nextInt(songStructure.maxOctave - songStructure.minOctave) + songStructure.minOctave + 1; //Randomise the octave within limits
+            }
 
             //Decide rhythm part
             if (rand.nextDouble() < songStructure.rhythmChance) {
