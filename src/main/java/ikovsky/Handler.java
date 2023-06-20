@@ -3,6 +3,8 @@ package ikovsky;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
 
 import java.util.HashMap;
@@ -56,18 +58,28 @@ public class Handler implements RequestHandler<Object, APIGatewayV2HTTPResponse>
                     dynamicsLow, dynamicsHigh, noteDensity, instrument, weightA,weightB, weightC, weightD, weightE, weightF,
                     weightG);
 
-            String midiString = songGenerator.generateSongString();
+            SongResponse songResponse = songGenerator.generateSongResponse();
 
             HashMap<String, String> headers = new HashMap<>();
             headers.put("Access-Control-Allow-Headers", "Content-Type");
             headers.put("Access-Control-Allow-Origin", "*");
             headers.put("Access-Control-Allow-Methods", "OPTIONS,POST,GET");
 
-            return APIGatewayV2HTTPResponse.builder()
-                    .withStatusCode(200)
-                    .withHeaders(headers)
-                    .withBody(midiString)
-                    .build();
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                String json = mapper.writeValueAsString(songResponse);
+                return APIGatewayV2HTTPResponse.builder()
+                        .withStatusCode(200)
+                        .withHeaders(headers)
+                        .withBody(json)
+                        .build();
+            } catch (JsonProcessingException e) {
+                return APIGatewayV2HTTPResponse.builder()
+                        .withStatusCode(500)
+                        .build();
+            }
+
+
         }
         return null;
     }

@@ -1,5 +1,8 @@
 package ikovsky;
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jm.JMC;
 
 public class Main implements JMC {
@@ -36,7 +39,7 @@ public class Main implements JMC {
         //	16 - Note Densitygrad
         //	17 - Instrument
         final int numParams = 17;
-        boolean debug = false;
+        boolean debug = true;
 
         if (args.length < numParams && !debug) {
             System.out.println("Unable to generate music - not enough parameters");
@@ -50,8 +53,13 @@ public class Main implements JMC {
             System.out.println("");
             System.out.println("===========================================");
 
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                String json = mapper.writeValueAsString(song.generateSongResponse());
+                System.out.println(json);
+            } catch (JsonProcessingException e) {
 
-//			song.createSongComplex(); //write song
+            }
         }
     }
 }

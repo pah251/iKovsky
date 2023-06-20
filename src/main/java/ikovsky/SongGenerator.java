@@ -8,11 +8,12 @@ package ikovsky;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Random;
+import java.util.UUID;
 
+import ikovsky.NameGenerator.NameGenerator;
 import jm.JMC;
 import jm.gui.show.ShowScore;
 import jm.music.data.Score;
@@ -38,6 +39,10 @@ public class SongGenerator implements JMC {
 
     private Random rand;                        //Random Number Generator
 
+    private final SongRepository songRepository;
+
+    private final NameGenerator nameGenerator;
+
     public SongGenerator(boolean debug, String saveLocation, String key, String tempo, String timeSig, String octaveLow,
                          String octaveHigh, String dynamicsLow, String dynamicsHigh, String noteDensity, String instrument,
                          String weightA, String weightB, String weightC, String weightD, String weightE, String weightF, String weightG) {
@@ -53,6 +58,8 @@ public class SongGenerator implements JMC {
         parameterErrors = new ArrayList<>();
 
         rand = new Random();
+        songRepository = new SongRepository();
+        nameGenerator = new NameGenerator();
     }
 
 //	/**
@@ -79,7 +86,7 @@ public class SongGenerator implements JMC {
 //		saveSong(); //Save the midi file
 //	}
 
-    public String generateSongString() {
+    public SongResponse generateSongResponse() {
         Composer newComp = new Composer(songStructure); //Create the composer
 
         //Create all the required parts
@@ -108,7 +115,14 @@ public class SongGenerator implements JMC {
         Write.midi(songScore, byteArrayOutputStream);
 
 //        return Base64.getEncoder().encodeToString(saveSong().getBytes(StandardCharsets.UTF_8));
-        return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
+        String midiString = Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
+        String songName = nameGenerator.generateName();
+        String songId = UUID.randomUUID().toString();
+
+        System.out.println("Song Named: " + songName);
+        songRepository.submitSongToDynamo(songId, songName, midiString);
+
+        return new SongResponse(songId, songName, midiString);
     }
 
     /**
